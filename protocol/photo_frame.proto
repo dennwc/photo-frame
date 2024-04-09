@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package protocol;
+
+option go_package = "github.com/dennwc/photo-frame/protocol";
+
+service PhotoFrame {
+  rpc SetGrid(SetGridReq) returns (SetGridResp);
+  rpc AddImage(AddImageReq) returns (AddImageResp);
+}
+
+message Image {
+  uint32 width = 1;
+  uint32 height = 2;
+  oneof image {
+    bytes rgb8 = 3; // 8 bit per channel RGB
+    bytes rgba8 = 4; // 8 bit per channel RGBA
+    bytes png = 5; // PNG bytes
+    bytes jpeg = 6; // JPEG bytes
+  }
+}
+
+message SetGridReq {
+  enum OldImageAction {
+    OLD_IMAGE_KEEP = 0; // keep old images on a new grid
+    OLD_IMAGE_WIPE = 1; // remove old images from the grid
+    OLD_IMAGE_FADE = 2; // fade old images on a new grid
+  }
+  uint32 cols = 1;
+  uint32 rows = 2;
+  OldImageAction old_image_act = 3;
+  repeated Image images = 4; // if set, should be exactly rows * cols
+}
+message SetGridResp {
+}
+message AddImageReq {
+  repeated Image images = 1;
+}
+message AddImageResp {
+}
